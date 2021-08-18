@@ -1,6 +1,7 @@
 import requests
 import datetime
 from config import weather_key
+from pprint import pprint
 
 
 def get_weather(city, weather_key):
@@ -18,7 +19,7 @@ def get_weather(city, weather_key):
             f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_key}&units=metric'
         )
         data = res.json()
-
+        pprint(data)
 
         city = data['name']
         weather = data["weather"][0]["main"]
@@ -30,11 +31,11 @@ def get_weather(city, weather_key):
         feels_like = data["main"]["feels_like"]
         humidity = data["main"]["humidity"]
         pressure = data["main"]["pressure"]
-
+        country = data["sys"]["country"]
         sunrise_timestamp = datetime.datetime.fromtimestamp(data["sys"]["sunrise"])
         sunset_timestamp = datetime.datetime.fromtimestamp(data["sys"]["sunset"])
         print(f"***{datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}***\n"
-              f"Погода в городе {city}\nТемпература:{cur_temp}C {wd}\nОщущается как:{feels_like}C"
+              f"Погода в городе {city},{country}\nТемпература:{cur_temp}C,{wd}\nОщущается как:{feels_like}C"
               f"\nВлажность:{humidity}% \nДавление:{pressure}мм.рт.ст"
               f"\nВремя рассвета:{sunrise_timestamp} \nВремя заката:{sunset_timestamp}"
               f"\nХорошего дня!"
