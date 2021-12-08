@@ -21,7 +21,7 @@ async def send_welcome(message: types.Message):
                         "Список команд: '/start', '/help'")
 
 
-'''@dp.message_handler()
+@dp.message_handler()
 async def get_weather(message: types.Message):
     code_to_icon = {
         "Clear": "Ясно \U00002600",
@@ -60,7 +60,7 @@ async def get_weather(message: types.Message):
 
     except Exception as ex:
         print(ex)
-        pass'''
+        pass
 
 
 @dp.message_handler()
