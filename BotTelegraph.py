@@ -1,24 +1,55 @@
 import logging
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.dispatcher.filters import Text
 from config import weather_key
 import datetime
 import requests
-city_id = 498817
+
 
 API_TOKEN = '1832273668:AAEO2eKblWxfWa56InpogBm-DEFTVNOw2EM'
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+main_info_search = {'city': "no"}
 
-
-@dp.message_handler(commands=['start', 'help'])
+@dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
 
     await message.reply("Hi!\nI'm TelegraphBot, i'll send you forecast\n"
                         "Привет! Я могу присылать тебе погоду в нужном городе\n"
                         "Напиши мне город в котором надо узнать погоду\n"
-                        "Список команд: '/start', '/help'")
+                        "Список команд: '/start', '/help'\n"
+                        "Введите город, в котором вы хотите узнать погоду")
+
+
+'''    inform = list(message.text)
+    for i in inform:
+        if i in '/start':
+            inform.remove(i)
+
+    main_info_search['city'] = inform
+    await message.reply(main_info_search)'''
+@dp.message_handler()
+async def name_of_area(message: types.Message):
+    inform = message.text
+    main_info_search['city'] = inform
+    await message.reply(main_info_search.get('city'))
+
+
+
+@dp.message_handler(commands=['help'])
+async def option_of_weather(message: types.Message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    buttons = ['На день', 'На 3 дня']
+    keyboard.add(*buttons)
+    await message.answer("На какой срок вы хотите узнать прогноз погоды?", reply_markup=keyboard)
+
+
+@dp.message_handler(Text(equals='На день'))
+async def day(message: types.Message):
+    await message.reply()
+
 
 
 @dp.message_handler()
@@ -43,7 +74,7 @@ async def get_weather(message: types.Message):
         if weather in code_to_icon:
             wd = code_to_icon[weather]
         else:
-            wd = "Я испытываю некоторые трудности с определение погоды, по возможности посмотрите сами в окно"
+            wd = "Я испытываю некоторые трудности с определением погоды, по возможности посмотрите сами в окно"
         cur_temp = data["main"]["temp"]
         feels_like = data["main"]["feels_like"]
         humidity = data["main"]["humidity"]
