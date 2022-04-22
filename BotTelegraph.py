@@ -8,15 +8,6 @@ import requests
 
 API_TOKEN = '1832273668:AAEO2eKblWxfWa56InpogBm-DEFTVNOw2EM'
 
-WEBHOOK_HOST = 'https://your.domain'
-WEBHOOK_PATH = ''
-WEBHOOK_URL = "http://6cc6-178-66-130-190.ngrok.io"
-
-# webserver settings
-WEBAPP_HOST = '127.0.0.1'
-WEBAPP_PORT = 5000
-
-
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -173,13 +164,4 @@ async def get_forecast_week(message: types.Message):
         print(e)
 
 if __name__ == '__main__':
-    start_webhook(
-        dispatcher=dp,
-        webhook_path=WEBHOOK_PATH,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=True,
-        host=WEBAPP_HOST,
-        port=WEBAPP_PORT,
-    )
     executor.start_polling(dp, skip_updates=True)
