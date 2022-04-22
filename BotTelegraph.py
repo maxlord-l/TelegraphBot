@@ -11,29 +11,36 @@ API_TOKEN = '1832273668:AAEO2eKblWxfWa56InpogBm-DEFTVNOw2EM'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-main_info_search = {'city': ""}
+main_info_search = {'city': "Москва"}
 city = str('')
 
-@dp.message_handler(commands=['start'])
+'''@dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     await message.reply("Hi!\nI'm TelegraphBot, i'll send you forecast\n"
                         "Привет! Я могу присылать тебе погоду в нужном городе\n"
                         "Напиши мне город в котором надо узнать погоду\n"
                         "Список команд: '/start', '/help'\n"
-                        "Введите город, в котором вы хотите узнать погоду")
+                        "Введите город, в котором вы хотите узнать погоду")'''
 
+@dp.message_handler(commands=['start'])
+async def option_of_weather(message: types.Message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    buttons = ['На день', 'На 3 дня']
+    keyboard.add(*buttons)
+    await message.answer("На какой срок вы хотите узнать прогноз погоды?", reply_markup=keyboard)
 
-@dp.message_handler()
+'''@dp.message_handler()
 async def get_city(message: types.Message):
     inform = message.text
     main_info_search['city'] = inform   # сохраняется в виде общей переменной.
 
-    await message.reply(f"Принято, ваш город для дальнейших прогнозов - {main_info_search['city']}")
+    await message.reply(f"Принято, ваш город для дальнейших прогнозов - {main_info_search['city']}")'''
 
 
-@dp.message_handler()
+
+
+@dp.message_handler(Text(equals='На день'))
 async def get_weather(message: types.Message):
-    await message.reply(main_info_search['city'])
 
     code_to_icon = {
         "Clear": "Ясно \U00002600",
@@ -78,11 +85,11 @@ async def get_weather(message: types.Message):
 
 
 
-@dp.message_handler()
+@dp.message_handler(Text(equals='На 3 дня'))
 async def get_forecast_week(message: types.Message):
     try:
         r = requests.get(
-            f'http://api.openweathermap.org/data/2.5/forecast?q={message.text}&appid={weather_key}&units=metric&lang=ru'
+            f"http://api.openweathermap.org/data/2.5/forecast?q={main_info_search['city']}&appid={weather_key}&units=metric&lang=ru"
         )
         data = r.json()
         city = data['city']['name']
