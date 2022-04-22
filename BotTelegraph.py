@@ -11,11 +11,11 @@ API_TOKEN = '1832273668:AAEO2eKblWxfWa56InpogBm-DEFTVNOw2EM'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-main_info_search = {'city': "no"}
+main_info_search = {'city': ""}
+city = str('')
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-
     await message.reply("Hi!\nI'm TelegraphBot, i'll send you forecast\n"
                         "Привет! Я могу присылать тебе погоду в нужном городе\n"
                         "Напиши мне город в котором надо узнать погоду\n"
@@ -23,37 +23,18 @@ async def send_welcome(message: types.Message):
                         "Введите город, в котором вы хотите узнать погоду")
 
 
-'''    inform = list(message.text)
-    for i in inform:
-        if i in '/start':
-            inform.remove(i)
-
-    main_info_search['city'] = inform
-    await message.reply(main_info_search)'''
 @dp.message_handler()
-async def name_of_area(message: types.Message):
+async def get_city(message: types.Message):
     inform = message.text
-    main_info_search['city'] = inform
-    await message.reply(main_info_search.get('city'))
+    main_info_search['city'] = inform   # сохраняется в виде общей переменной.
 
-
-
-@dp.message_handler(commands=['help'])
-async def option_of_weather(message: types.Message):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ['На день', 'На 3 дня']
-    keyboard.add(*buttons)
-    await message.answer("На какой срок вы хотите узнать прогноз погоды?", reply_markup=keyboard)
-
-
-@dp.message_handler(Text(equals='На день'))
-async def day(message: types.Message):
-    await message.reply()
-
+    await message.reply(f"Принято, ваш город для дальнейших прогнозов - {main_info_search['city']}")
 
 
 @dp.message_handler()
 async def get_weather(message: types.Message):
+    await message.reply(main_info_search['city'])
+
     code_to_icon = {
         "Clear": "Ясно \U00002600",
         "Clouds": "Облачно \U00002601",
@@ -65,7 +46,7 @@ async def get_weather(message: types.Message):
     }
     try:
         res = requests.get(
-            f'http://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={weather_key}&units=metric&lang=ru'
+            f"http://api.openweathermap.org/data/2.5/weather?q={main_info_search['city']}&appid={weather_key}&units=metric&lang=ru"
         )
         data = res.json()
 
@@ -92,6 +73,9 @@ async def get_weather(message: types.Message):
     except Exception as ex:
         print(ex)
         pass
+
+
+
 
 
 @dp.message_handler()
