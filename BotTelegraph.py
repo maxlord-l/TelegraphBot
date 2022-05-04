@@ -11,49 +11,36 @@ API_TOKEN = '1832273668:AAEO2eKblWxfWa56InpogBm-DEFTVNOw2EM'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
-main_info_search = {'city': "no"}
+main_info_search = {'city': "Санкт-Петербург",
+                    'time': " "}
+city = str('')
 
-@dp.message_handler(commands=['start'])
+'''@dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-
     await message.reply("Hi!\nI'm TelegraphBot, i'll send you forecast\n"
                         "Привет! Я могу присылать тебе погоду в нужном городе\n"
                         "Напиши мне город в котором надо узнать погоду\n"
                         "Список команд: '/start', '/help'\n"
-                        "Введите город, в котором вы хотите узнать погоду")
+                        "Введите город, в котором вы хотите узнать погоду")'''
 
-
-'''    inform = list(message.text)
-    for i in inform:
-        if i in '/start':
-            inform.remove(i)
-
-    main_info_search['city'] = inform
-    await message.reply(main_info_search)'''
-@dp.message_handler()
-async def name_of_area(message: types.Message):
-    inform = message.text
-    main_info_search['city'] = inform
-    await message.reply(main_info_search.get('city'))
-
-
-
-@dp.message_handler(commands=['help'])
+@dp.message_handler(commands=['start'])
 async def option_of_weather(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ['На день', 'На 3 дня']
+    buttons = ['На день', 'На 5 дней']
     keyboard.add(*buttons)
     await message.answer("На какой срок вы хотите узнать прогноз погоды?", reply_markup=keyboard)
 
+'''    inform = message.text
+    main_info_search['city'] = inform   # сохраняется в виде общей переменной.
+
+    await message.reply(f"Принято, ваш город для дальнейших прогнозов - {main_info_search['city']}")'''
+
+
+
 
 @dp.message_handler(Text(equals='На день'))
-async def day(message: types.Message):
-    await message.reply()
-
-
-
-@dp.message_handler()
 async def get_weather(message: types.Message):
+
     code_to_icon = {
         "Clear": "Ясно \U00002600",
         "Clouds": "Облачно \U00002601",
@@ -65,7 +52,7 @@ async def get_weather(message: types.Message):
     }
     try:
         res = requests.get(
-            f'http://api.openweathermap.org/data/2.5/weather?q={message.text}&appid={weather_key}&units=metric&lang=ru'
+            f"http://api.openweathermap.org/data/2.5/weather?q={main_info_search['city']}&appid={weather_key}&units=metric&lang=ru"
         )
         data = res.json()
 
@@ -94,40 +81,43 @@ async def get_weather(message: types.Message):
         pass
 
 
-@dp.message_handler()
+
+
+
+@dp.message_handler(Text(equals='На 5 дней'))
 async def get_forecast_week(message: types.Message):
     try:
         r = requests.get(
-            f'http://api.openweathermap.org/data/2.5/forecast?q={message.text}&appid={weather_key}&units=metric&lang=ru'
+            f"http://api.openweathermap.org/data/2.5/forecast?q={main_info_search['city']}&appid={weather_key}&units=metric&lang=ru"
         )
         data = r.json()
         city = data['city']['name']
-        first_day = data['list'][0]['dt_txt']
-        first_day_temp = data['list'][0]['main']['temp']
-        first_day_humidity = data['list'][0]['main']['humidity']
-        first_day_pressure = data['list'][0]['main']['pressure']
-        first_day_wd = data['list'][0]['weather'][0]['description']
+        first_day = data['list'][5]['dt_txt']
+        first_day_temp = data['list'][5]['main']['temp']
+        first_day_humidity = data['list'][5]['main']['humidity']
+        first_day_pressure = data['list'][5]['main']['pressure']
+        first_day_wd = data['list'][5]['weather'][0]['description']
         first_day_wd = str(first_day_wd)
-        second_day = data['list'][8]['dt_txt']
-        second_day_temp = data['list'][8]['main']['temp']
-        second_day_humidity = data['list'][8]['main']['humidity']
-        second_day_pressure = data['list'][8]['main']['pressure']
-        second_day_wd = data['list'][8]['weather'][0]['description']
-        third_day = data['list'][16]['dt_txt']
-        third_day_temp = data['list'][16]['main']['temp']
-        third_day_humidity = data['list'][16]['main']['humidity']
-        third_day_pressure = data['list'][16]['main']['pressure']
-        third_day_wd = data['list'][16]['weather'][0]['description']
-        fourth_day = data['list'][24]['dt_txt']
-        fourth_day_temp = data['list'][24]['main']['temp']
-        fourth_day_humidity = data['list'][24]['main']['humidity']
-        fourth_day_pressure = data['list'][24]['main']['pressure']
-        fourth_day_wd = data['list'][24]['weather'][0]['description']
-        fifth_day = data['list'][32]['dt_txt']
-        fifth_day_temp = data['list'][32]['main']['temp']
-        fifth_day_humidity = data['list'][32]['main']['humidity']
-        fifth_day_pressure = data['list'][32]['main']['pressure']
-        fifth_day_wd = data['list'][32]['weather'][0]['description']
+        second_day = data['list'][13]['dt_txt']
+        second_day_temp = data['list'][13]['main']['temp']
+        second_day_humidity = data['list'][13]['main']['humidity']
+        second_day_pressure = data['list'][13]['main']['pressure']
+        second_day_wd = data['list'][13]['weather'][0]['description']
+        third_day = data['list'][21]['dt_txt']
+        third_day_temp = data['list'][21]['main']['temp']
+        third_day_humidity = data['list'][21]['main']['humidity']
+        third_day_pressure = data['list'][21]['main']['pressure']
+        third_day_wd = data['list'][21]['weather'][0]['description']
+        fourth_day = data['list'][29]['dt_txt']
+        fourth_day_temp = data['list'][29]['main']['temp']
+        fourth_day_humidity = data['list'][29]['main']['humidity']
+        fourth_day_pressure = data['list'][29]['main']['pressure']
+        fourth_day_wd = data['list'][29]['weather'][0]['description']
+        fifth_day = data['list'][37]['dt_txt']
+        fifth_day_temp = data['list'][37]['main']['temp']
+        fifth_day_humidity = data['list'][37]['main']['humidity']
+        fifth_day_pressure = data['list'][37]['main']['pressure']
+        fifth_day_wd = data['list'][37]['weather'][0]['description']
         await message.reply(f"{city} \n"
                             f"{first_day}: \n"
               f"Температура: {first_day_temp}C \n"
